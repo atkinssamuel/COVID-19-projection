@@ -1,0 +1,104 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{mdframed}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\geometry{
+    a4paper,
+    left=20mm,
+    right=20mm,
+    bottom=33mm
+}
+
+% This section defines the title, author and the date. To display these elements, call the "\maketitle" command
+\title{\vspace{70mm}\textbf{SIR Model Explained}}
+\author{Samuel Atkins}
+\date{December 2020}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\leftmark}
+\lfoot{Samuel Atkins}
+\rfoot{Page \thepage}
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+
+\begin{document}
+\maketitle
+\pagebreak
+\section{The Model}
+There are three variables that the SIR model depends on, $S$, $I$, and $R$. $S(t)$ is the number of susceptible individuals, $I(t)$ is the number of infected individuals, and $R(t)$ is the number of recovered individuals. We define the following variables to make our future calculations more simple:
+
+\[s(t) = \frac{S(t)}{N}\]
+\[i(t) = \frac{I(t)}{N}\]
+\[r(t) = \frac{R(t)}{N}\]
+
+\section{Model Assumptions}
+\begin{enumerate}[label=\arabic*.]
+\item The total number of individuals in the population, $N$, is constant
+\item Individuals do not immigrate to or from the population in question
+\item There are no births
+\item There is no loss of immunity (we could assume a loss of immunity and derive different equations)
+
+\end{enumerate}
+Since the total number of individuals in the population, $N$, is constant $s(t) + i(t) + r(t) = 1$ because $S(t) + I(t) + R(t) = N$. Given our assumptions, we are effectively assuming that the only way an individual leaves the susceptible group is by becoming infected. Thus, the number of susceptible individuals is always decreasing. 
+
+\section{The Differential Equations}
+The rate at which the number of susceptible individuals decreases is dependent on how many infected individuals the susceptible group comes into contact with. If an infected individual comes into contact with $b$ susceptible individuals per day, then, on average, each infected individual generates $b \cdot s(t)$ new infected individuals per day. Furthermore, a fixed fraction of the infected group, $k$, recovers every day. Using these assumptions, we arrive at the following differential Equations:
+
+\[\frac{dS}{dt} = -b s(t) I(t) \implies \frac{ds}{dt} = \frac{-b s(t) I(t)}{N}\]
+\[\frac{ds}{dt} = -b s(t) i(t)\]
+
+\noindent
+The $i(t)$ factor is present because given our assumption, if there is just one infected person then the number of susceptible people decreases by a factor of $b s(t)$. Therefore, if there are 2 infected people, then the number of susceptible people decreases by a factor of $2b s(t)$. For $I(t)$ infected people, the number of susceptible people decreases by a factor of $b \hspace{0.5mm} s(t) I(t)$. 
+
+\[\frac{dR}{dt} = k I(t) \implies \frac{dr}{dt} = k i(t)\]
+
+\noindent
+This follows from the fact that $k$ infected individuals recover every day. Now, since the number of infected people increases as a function of $b \hspace{0.5mm} s(t) I(t)$ and $k \hspace{0.5mm} I(t)$, we have the following:
+
+\[\frac{dI}{dt} = -k I(t) + b s(t) I(t) \implies \frac{dI}{dt} = -\frac{dR}{dt} - \frac{dS}{dt} \implies \frac{ds}{dt} + \frac{di}{dt} + \frac{dr}{dt} = 0\]
+
+\section{Initial Conditions}
+To solve this set of differential equations, we need to supply some initial conditions. We assume that a tiny fraction of our population is infected and the rest of our population is healthy. Thus, for a population of size 5,000,000, we have the following:
+
+\[S(0) = 4,999,990\]
+\[I(0) = 10\]
+\[R(0) = 0\]
+
+\[s(0) = 0.999998 \approx 1\]
+\[i(0) = 2 x 10^{-6}\]
+\[r(0) = 0\]
+
+\section{Euler's Method}
+We do not numerically solve the SIR equations. Instead, we use Euler's method. For a single time dependent variable, $x$, Euler's method is as follows:
+
+\[x_i = x_{i-1} + \frac{dx(t-1)}{dt} \cdot \Delta t\]
+
+\noindent
+Since we have three variables in the context of the SIR model, we have three Euler formulas:
+
+\[s_i = s_{i-1} + \frac{ds}{dt}\Bigr|_{i-1} \cdot \Delta t\]
+\[i_i = i_{i-1} + \frac{di}{dt}\Bigr|_{i-1}  \cdot \Delta t\]
+\[r_i = r_{i-1} + \frac{dr}{dt}\Bigr|_{i-1}  \cdot \Delta t\]
+
+\noindent
+Given the SIR differential equations, we have:
+
+\[s_i = s_{i-1} - b \hspace{0.5mm} s_{i-1} i_{i-1} \cdot \Delta t\]
+\[i_i = i_{i-1} + (- k i_{i-1} + b \hspace{0.5mm} s_{i-1} i_{i-1}) \cdot \Delta t\]
+\[r_i = r_{i-1} + k \hspace{0.5mm} i_{i-1} \cdot \Delta t\]
+
+\section{Finding Optimal Parameters for a Dataset}
+There are a few ways to go about this. The first way is to estimate $b$ and $k$ based on the recovery rate and $R$ value typically associated with an SIR outbreak. The other way, which is far more involved, is to define a loss function between the predictions of the model and the data. Then, compute the sum of that loss function over all of the observations. This method gives us a way to quantify the difference between our model's predictions and the data. Using this method, we can then perform a grid search over all of the possible parameters to obtain the optimal model. 
+\end{document}
