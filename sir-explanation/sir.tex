@@ -69,6 +69,11 @@ This follows from the fact that $k$ infected individuals recover every day. Now,
 
 \[\frac{dI}{dt} = -k I(t) + b s(t) I(t) \implies \frac{dI}{dt} = -\frac{dR}{dt} - \frac{dS}{dt} \implies \frac{ds}{dt} + \frac{di}{dt} + \frac{dr}{dt} = 0\]
 
+\subsubsection*{SIR Equations Summary}
+\[\frac{ds}{dt} = -b s(t) i(t)\]
+\[\frac{di}{dt} = - \frac{dr}{dt} - \frac{ds}{dt}\]
+\[\frac{dr}{dt} = k i(t)\]
+
 \section{Initial Conditions}
 To solve this set of differential equations, we need to supply some initial conditions. We assume that a tiny fraction of our population is infected and the rest of our population is healthy. Thus, for a population of size 5,000,000, we have the following:
 
